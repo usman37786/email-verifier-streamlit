@@ -1,0 +1,12 @@
+{
+  "name": "email-verifier-worker",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Cloudflare Worker port of the email-verifier pipeline (zero dependencies).",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "node --test test/worker.test.mjs",
+    "check": "node --check src/index.js"
+  }
+}

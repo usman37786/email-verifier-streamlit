@@ -1,0 +1,5 @@
+{
+  "nullmx.example|MX": {"Status": 0, "Answer": [{"name": "nullmx.example", "type": 15, "data": "0 ."}]},
+  "nullmx.example|A": {"Status": 0, "Answer": [{"name": "nullmx.example", "type": 1, "data": "198.51.100.99"}]},
+  "nullmx.example|AAAA": {"Status": 0, "Answer": []}
+}

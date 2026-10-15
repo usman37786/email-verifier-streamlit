@@ -1,0 +1,107 @@
+{
+  "syntax_valid": [
+    "a@b.com",
+    "valid.user@gmail.com",
+    "user+tag@gmail.com",
+    "first.last@sub.domain.co.uk",
+    "USER@UPPER-case.COM",
+    "alice123@company-name.io",
+    "a.b.c@example.museum",
+    "x+y+z@example.org",
+    "user@münchen.de",
+    "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcde@a.co",
+    "plain.name@example.travel",
+    "hyphen-inside@ex-ample.co"
+  ],
+  "syntax_invalid": [
+    {"input": "plainaddress", "code": "E103"},
+    {"input": "bad@@x.com", "code": "E103"},
+    {"input": "a..b@gmail.com", "code": "E104"},
+    {"input": ".a@b.com", "code": "E104"},
+    {"input": "a.@b.com", "code": "E104"},
+    {"input": "a@b", "code": "E105"},
+    {"input": "a@1.2", "code": "E105"},
+    {"input": "a@127.0.0.1", "code": "E105"},
+    {"input": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@b.com", "code": "E102"},
+    {"input": "", "code": "E101"},
+    {"input": "   ", "code": "E101"},
+    {"input": "no-at-sign.example", "code": "E103"},
+    {"input": "two@@at.com", "code": "E103"},
+    {"input": "spaces in@example.com", "code": "E104"},
+    {"input": "\"quoted\"@example.com", "code": "E104"},
+    {"input": "a@-bad-domain.com", "code": "E105"},
+    {"input": "a@bad_domain.com", "code": "E105"},
+    {"input": "a@b.c", "code": "E105"},
+    {"input": "trail-hyphen@domain-.com", "code": "E105"},
+    {"input": "a@domain..com", "code": "E105"},
+    {"input": "user@[10.0.0.1]", "code": "E105"}
+  ],
+  "too_long_total": "aaaa.bbbb.cccc.ddddd.eeee.ffff.ghhh.iiii.jjjj.kkkk.llll.mmmm.nnnn.oooo.pppp.qqqq.rrrr.ssss.tttt.uuuu.vvvv.wwww.xxxx.yyyy.zzzz123@a-very-long-domain-name-for-length-testing-example-register.com",
+  "rules": [
+    {"input": "ab@gmail.com", "code": "E201"},
+    {"input": "valid.user@gmail.com", "code": null},
+    {"input": "user+tag@gmail.com", "code": null},
+    {"input": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaax@gmail.com", "code": "E201"},
+    {"input": ".leadingdot@gmail.com", "code": null, "note": "leading dot caught by S1 as E104"},
+    {"input": "ab@hotmail.com", "code": "E201"},
+    {"input": "ok.user@outlook.com", "code": null},
+    {"input": "ab@yahoo.com", "code": "E201"}
+  ],
+  "lists": [
+    {"input": "x@mailinator.com", "code": "E301", "status": "risky"},
+    {"input": "x@tempmail.com", "code": "E301", "status": "risky"},
+    {"input": "info@company.com", "code": "E303", "status": "risky"},
+    {"input": "admin@example.org", "code": "E303", "status": "risky"},
+    {"input": "user@gmial.com", "code": "E304", "status": "risky", "did_you_mean": "gmail.com"},
+    {"input": "user@hotmial.com", "code": "E304", "status": "risky"},
+    {"input": "someone@gmail.com", "code": null, "flag": "free_provider"}
+  ],
+  "doh": {
+    "ok": {
+      "good.com|MX": {"Status": 0, "Answer": [{"name": "good.com", "type": 15, "data": "10 mx.good.com."}]},
+      "good.com|A": {"Status": 0, "Answer": [{"name": "good.com", "type": 1, "data": "93.184.216.35"}]},
+      "good.com|AAAA": {"Status": 0, "Answer": []},
+      "mx.good.com|A": {"Status": 0, "Answer": [{"name": "mx.good.com", "type": 1, "data": "93.184.216.34"}]},
+      "mx.good.com|AAAA": {"Status": 0, "Answer": []}
+    },
+    "nxdomain": {
+      "nonexistent-domain-xyz123.tld|MX": {"Status": 3, "Answer": []},
+      "nonexistent-domain-xyz123.tld|A": {"Status": 3, "Answer": []},
+      "nonexistent-domain-xyz123.tld|AAAA": {"Status": 3, "Answer": []}
+    },
+    "nullmx": {
+      "nullmx.example|MX": {"Status": 0, "Answer": [{"name": "nullmx.example", "type": 15, "data": "0 ."}]},
+      "nullmx.example|A": {"Status": 0, "Answer": [{"name": "nullmx.example", "type": 1, "data": "198.51.100.99"}]},
+      "nullmx.example|AAAA": {"Status": 0, "Answer": []}
+    },
+    "noma": {
+      "noma.example|MX": {"Status": 0, "Answer": []},
+      "noma.example|A": {"Status": 0, "Answer": []},
+      "noma.example|AAAA": {"Status": 0, "Answer": []}
+    },
+    "privmx": {
+      "privmx.example|MX": {"Status": 0, "Answer": [{"name": "privmx.example", "type": 15, "data": "10 mx.internal.example."}]},
+      "privmx.example|A": {"Status": 0, "Answer": []},
+      "privmx.example|AAAA": {"Status": 0, "Answer": []},
+      "mx.internal.example|A": {"Status": 0, "Answer": [{"name": "mx.internal.example", "type": 1, "data": "10.0.0.5"}]},
+      "mx.internal.example|AAAA": {"Status": 0, "Answer": []}
+    },
+    "mxhost_nxdomain": {
+      "ghost.example|MX": {"Status": 0, "Answer": [{"name": "ghost.example", "type": 15, "data": "10 missinghost.example."}]},
+      "ghost.example|A": {"Status": 0, "Answer": []},
+      "ghost.example|AAAA": {"Status": 0, "Answer": []},
+      "missinghost.example|A": {"Status": 3, "Answer": []},
+      "missinghost.example|AAAA": {"Status": 3, "Answer": []}
+    },
+    "servfail": {
+      "servfail.example|MX": {"Status": 2, "Answer": []}
+    }
+  },
+  "disposable_domains_js": [
+    "mailinator.com", "tempmail.com", "fakeinbox.com", "guerrillamail.com",
+    "10minutemail.com", "trashmail.com", "yopmail.com", "sharklasers.com",
+    "getairmail.com", "mailnesia.com", "maildrop.cc", "trashmail.com",
+    "throwawaymail.com", "fakeaddress.com", "discard.email", "temp-mail.org",
+    "tempr.email", "mohmal.com", "getnada.com", "emailondeck.com"
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "good.com|MX": {"Status": 0, "Answer": [{"name": "good.com", "type": 15, "data": "10 mx.good.com."}]},
+  "good.com|A": {"Status": 0, "Answer": [{"name": "good.com", "type": 1, "data": "93.184.216.35"}]},
+  "good.com|AAAA": {"Status": 0, "Answer": []},
+  "mx.good.com|A": {"Status": 0, "Answer": [{"name": "mx.good.com", "type": 1, "data": "93.184.216.34"}]},
+  "mx.good.com|AAAA": {"Status": 0, "Answer": []}
+}

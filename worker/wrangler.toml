@@ -1,0 +1,24 @@
+name = "email-verifier"
+main = "src/index.js"
+compatibility_date = "2025-01-01"
+
+# Zero-dependency ES module: no npm dependencies and no imports.
+# package.json only carries the node:test script (no install step).
+[vars]
+MAX_BULK = "100"
+HALT_POLICY = "strict"
+DEADLINE_MS = "3000"
+RATE_SINGLE = "60"
+RATE_BATCH = "10"
+SUBREQUEST_BUDGET = "200"
+
+# Secrets are never stored in this file. Set them with:
+#   npx wrangler secret put API_KEY
+#   npx wrangler secret put SMTP_PROBE_URL
+#   npx wrangler secret put SMTP_PROBE_KEY
+#
+# SMTP_PROBE_URL is optional: when unset, S6 stops with E601 (unknown, DNS-only
+# verdict) exactly like the Python pipeline with no probe configured.
+
+[observability]
+enabled = true

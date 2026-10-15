@@ -1,0 +1,5 @@
+{
+  "nonexistent-domain-xyz123.tld|MX": {"Status": 3, "Answer": []},
+  "nonexistent-domain-xyz123.tld|A": {"Status": 3, "Answer": []},
+  "nonexistent-domain-xyz123.tld|AAAA": {"Status": 3, "Answer": []}
+}

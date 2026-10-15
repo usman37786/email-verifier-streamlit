@@ -1,0 +1,10 @@
+# Pinned to the exact versions verified in this repo's venv. Streamlit Cloud
+# needs Python >= 3.11 (pandas 3.x and dnspython 2.9 require it); set the
+# project's Python version to 3.11+ in the Streamlit Cloud deploy dialog.
+streamlit==1.65.0
+pandas==3.0.6
+dnspython==2.9.0
+requests==2.34.2
+
+# Test-only, not needed to run the app but harmless and needed for `pytest`.
+pytest

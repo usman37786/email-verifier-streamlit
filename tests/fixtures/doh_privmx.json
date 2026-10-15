@@ -1,0 +1,7 @@
+{
+  "privmx.example|MX": {"Status": 0, "Answer": [{"name": "privmx.example", "type": 15, "data": "10 mx.internal.example."}]},
+  "privmx.example|A": {"Status": 0, "Answer": []},
+  "privmx.example|AAAA": {"Status": 0, "Answer": []},
+  "mx.internal.example|A": {"Status": 0, "Answer": [{"name": "mx.internal.example", "type": 1, "data": "10.0.0.5"}]},
+  "mx.internal.example|AAAA": {"Status": 0, "Answer": []}
+}

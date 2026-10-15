@@ -1,0 +1,5 @@
+{
+  "noma.example|MX": {"Status": 0, "Answer": []},
+  "noma.example|A": {"Status": 0, "Answer": []},
+  "noma.example|AAAA": {"Status": 0, "Answer": []}
+}
