@@ -228,6 +228,16 @@ def run_bulk_local(emails, opts, bar, note, state):
     total = len(emails)
     domain_delay = max(0, int(settings("domain_delay_ms"))) / 1000.0
     batch_delay = max(0, int(settings("batch_delay_ms"))) / 1000.0
+    # core.pipeline.verify() only consults the RunState breakers when opts
+    # carries _run_state (pipeline.py reads opts["_run_state"]). Without that
+    # line the local bulk path could never open a breaker, so an
+    # environment-wide failure -- our outbound IP listed in an RBL, returning
+    # E614 on every address -- burned one SMTP session per address for the
+    # entire list, and the `if state.trip` guards below were polling a
+    # RunState that could never trip. app.py always passes a real RunState().
+    opts = dict(opts)
+    if isinstance(state, RunState):
+        opts["_run_state"] = state
     for n, (domain, group) in enumerate(group_by_domain(emails)):
         if state.trip:
             break

@@ -56,12 +56,42 @@ class SmtpVerdict:
     flags: List[str] = field(default_factory=list)
 
 
+# Sender-side policy rejections. These refuse OUR connection, not the address,
+# so they must never fall through to E610 ("mailbox rejected" -> Invalid): a
+# live mailbox would be reported unreachable purely because this host's outbound
+# IP is listed. Matched BEFORE the bare 550/551/553 check below, which is what
+# separates a truthful "unknown, retry later" from a false negative.
+#
+# The literal "5.7." test alone was insufficient: Barracuda answers
+#     550 JunkMail rejected - host ([127.0.0.1]) [34.127.0.121]:3968 is in an RBL
+# with no enhanced-status token at all, so it landed in E610 and got scored
+# as "Invalid". The keyword set below catches that shape too.
+_POLICY_MARKERS = (
+    "5.7.",           # enhanced status class 5.7 (security / policy)
+    "5.7 ",           # "550 5.7" truncated at end of line
+    "rbl",            # "[1.2.3.4]:3968 is in an RBL"
+    "blocklist",
+    "blacklist",
+    "spamhaus",
+    "barracuda",
+    "spamtrap",
+    "junkmail",
+    "sender reputation",
+)
+
+
+def is_sender_policy(message: str) -> bool:
+    """True when the reply rejects our sender, not the recipient address."""
+    msg = (message or "").lower()
+    return any(marker in msg for marker in _POLICY_MARKERS)
+
+
 def classify_rcpt(code: int, message: str) -> str:
     """Map an SMTP RCPT reply to a registry code (PRD S6 table)."""
     msg = (message or "").lower()
     if code in (250, 251):
         return "OK"
-    if "5.7." in msg:
+    if is_sender_policy(msg):
         return "E614"
     if code == 552 or "5.2.2" in msg:
         return "E611"
@@ -257,9 +287,15 @@ def probe_email(email: str, mx_hosts: List[str], opts: Optional[dict] = None,
                                smtp_code=code)
         if verdict != "OK":
             session.rset()
-            return SmtpVerdict(stop_code=verdict,
-                               message=f"RCPT reply {code} {msg}",
-                               smtp_code=code)
+            return SmtpVerdict(
+                stop_code=verdict,
+                message=f"RCPT reply {code} {msg}",
+                smtp_code=code,
+                # E614 blames our outbound IP/PTR, not the address. Carry a flag
+                # so the UI and any CSV export can say so instead of the row
+                # reading like a verdict about the recipient.
+                flags=["sender_blocked"] if verdict == "E614" else [],
+            )
         # Real address accepted: prove it is not a catch-all domain.
         cached = _catchall_cached(domain)
         if cached is False:
@@ -282,8 +318,11 @@ def probe_email(email: str, mx_hosts: List[str], opts: Optional[dict] = None,
                 message="catch-all domain: random address accepted too")
         if rverdict in ("E612", "E613", "E614"):
             session.rset()
-            return SmtpVerdict(stop_code=rverdict, smtp_code=rcode,
-                               message=f"random probe reply {rcode} {rmsg}")
+            return SmtpVerdict(
+                stop_code=rverdict, smtp_code=rcode,
+                message=f"random probe reply {rcode} {rmsg}",
+                flags=["sender_blocked"] if rverdict == "E614" else [],
+            )
         # Random rejected; lazy wildcard servers may accept the second random
         # address - re-probe once only if recently seen accepting (PRD 6).
         if _recently_accepting(domain):
